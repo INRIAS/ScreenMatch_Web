@@ -6,12 +6,12 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import com.aluracursos.screenmatch.dto.SerieDTO;
 import com.aluracursos.screenmatch.model.Categoria;
 import com.aluracursos.screenmatch.model.Episodio;
 import com.aluracursos.screenmatch.model.Serie;
 
-
-public interface SerieRepository extends JpaRepository<Serie, Long>{
+public interface SerieRepository extends JpaRepository<Serie, Long> {
 
     Optional<Serie> findByTituloContainsIgnoreCase(String nombreSerie);
 
@@ -19,12 +19,18 @@ public interface SerieRepository extends JpaRepository<Serie, Long>{
 
     List<Serie> findByGenero(Categoria categoria);
 
-    // List<Serie> findByTotaldeTemporadasLessThanEqualAndEvaluacionGreaterThanEqual(int totaldeTemporadas, Double evaluacion);
+    // List<Serie>
+    // findByTotaldeTemporadasLessThanEqualAndEvaluacionGreaterThanEqual(int
+    // totaldeTemporadas, Double evaluacion);
 
     // ************Querys Nativas fijas*************
 
-    /*@Query(value = "SELECT * FROM series WHERE series.totalde_temporadas >= 5 AND series.evaluacion <= 9", nativeQuery = true)
-    List<Serie> buscarPorQueryNativas(); */
+    /*
+     * @Query(value =
+     * "SELECT * FROM series WHERE series.totalde_temporadas >= 5 AND series.evaluacion <= 9"
+     * , nativeQuery = true)
+     * List<Serie> buscarPorQueryNativas();
+     */
 
     // ************Querys Nativas con variante*************
     @Query("SELECT s FROM Serie s WHERE s.totaldeTemporadas >= :totaldeTemporadas AND s.evaluacion <= :evaluacion")
@@ -35,4 +41,7 @@ public interface SerieRepository extends JpaRepository<Serie, Long>{
 
     @Query("SELECT e FROM Serie s JOIN s.episodios e WHERE s = :serie ORDER BY e.evaluacion DESC LIMIT 5 ")
     List<Episodio> buscarTop5Episodios(Serie serie);
+
+    @Query("SELECT s FROM Serie s " + "JOIN s.episodios e " + "GROUP BY s " + "ORDER BY MAX(e.fechaDeLanzamiento) DESC LIMIT 5")
+    List<Serie> obtenerLanzamientosMasRecientes();
 }
